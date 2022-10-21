@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "durak"
+version = "0.1.0"
+description = "The durak service"
+authors = ["copper-boy <sermed512@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.0"
+uvicorn = {extras = ["standard"], version = "^0.18.3"}
+tortoise-orm = {extras = ["asyncpg"], version = "^0.19.2"}
+aiohttp = "^3.8.3"
+pydantic = {extras = ["email"], version = "^1.10.2"}
+loguru = "^0.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
