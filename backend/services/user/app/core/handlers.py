@@ -11,7 +11,7 @@ from responses.bad import bad_response
 def register_authjwtexception_handler(app: FastAPI) -> None:
     @app.exception_handler(AuthJWTException)
     async def authjwt_exception_handler(
-            request: Request, exc: AuthJWTException
+        request: Request, exc: AuthJWTException
     ) -> JSONResponse:
         logger.info(
             f"With request=([{request.method}][{request.url}][{request.query_params}]) "
@@ -24,7 +24,7 @@ def register_authjwtexception_handler(app: FastAPI) -> None:
 def register_httpexception_handler(app: FastAPI) -> None:
     @app.exception_handler(HTTPException)
     async def http_exception_handler(
-            request: Request, exc: HTTPException
+        request: Request, exc: HTTPException
     ) -> JSONResponse:
         logger.info(
             f"With request=([{request.method}][{request.url}][{request.query_params}]) "
