@@ -1,20 +1,20 @@
 [tool.poetry]
-name = "users"
+name = "user"
 version = "0.1.0"
-description = "The users service"
+description = ""
 authors = ["copper-boy <sermed512@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.85.0"
-uvicorn = {extras = ["standard"], version = "^0.18.3"}
-tortoise-orm = {extras = ["asyncpg"], version = "^0.19.2"}
+fastapi = "^0.85.2"
+uvicorn = {extras = ["standard"], version = "^0.19.0"}
 pydantic = {extras = ["email"], version = "^1.10.2"}
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 fastapi-jwt-auth = "^0.5.0"
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+sqlalchemy = "^1.4.42"
+asyncpg = "^0.27.0"
+alembic = "^1.8.1"
 
 
 [build-system]

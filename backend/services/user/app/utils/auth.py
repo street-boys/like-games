@@ -1,14 +1,13 @@
 from fastapi.exceptions import HTTPException
 from passlib.context import CryptContext
 from pydantic import EmailStr
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from accessors.user import get_user_by
+from core.tools import store
 from orm.user import UserModel
-from structures.enums import FilterEnum
-from structures.named_tuples import attribute
 
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(password: str, hashed_password: str) -> bool:
@@ -35,10 +34,15 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def authenticate_user(email: EmailStr, password: str) -> UserModel:
-    user = await get_user_by(attr=attribute(filter=FilterEnum.email), value=email)
-
+async def authenticate_user(
+    session: AsyncSession, email: EmailStr, password: str
+) -> UserModel:
+    user = await store.user_accessor.get_user_by(
+        session=session, where=(UserModel.email == email)
+    )
     if not user or not verify_password(password, user.password):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='incorrect login data posted')
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="incorrect login data posted"
+        )
+
     return user

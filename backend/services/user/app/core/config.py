@@ -13,7 +13,7 @@ def get_admin_settings() -> AdminSettings:
 
 
 class DatabaseSettings(BaseSettings):
-    USER_DATABASE_URI: str
+    USER_DATABASE_URI: str = "sqlite+aiosqlite:///user.db"
 
 
 @lru_cache()

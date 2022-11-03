@@ -2,11 +2,15 @@ from enum import Enum
 
 
 class FilterPathEnum(str, Enum):
-    id = 'id'
-    username = 'username'
+    id = "id"
+    telegram = "telegram"
 
 
 class FilterEnum(str, Enum):
-    id = 'id'
-    email = 'email'
-    username = 'username'
+    id = "id"
+    telegram = "telegram"
+
+
+class RegistrationTypeEnum(str, Enum):
+    provided = "provided"
+    telegram = "telegram"
