@@ -32,6 +32,7 @@ class UserSchema(BaseModel):
 
 class UserViewSchema(BaseModel):
     id: int
+    telegram: int | None = None
     username: str
 
     class Config:

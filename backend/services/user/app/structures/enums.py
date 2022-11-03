@@ -6,11 +6,6 @@ class FilterPathEnum(str, Enum):
     telegram = "telegram"
 
 
-class FilterEnum(str, Enum):
-    id = "id"
-    telegram = "telegram"
-
-
 class RegistrationTypeEnum(str, Enum):
     provided = "provided"
     telegram = "telegram"
