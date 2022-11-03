@@ -1,2 +1,1 @@
-from store.integration.user.accessor import \
-    UserAccessor as IntegrationUserAccessor
+from store.integration.user.accessor import UserAccessor as IntegrationUserAccessor

@@ -16,7 +16,7 @@ view_router = APIRouter()
 
 @view_router.get(path=".view/{user_id}", status_code=status.HTTP_200_OK)
 async def view_pot(
-        user_id: int = Path(...), session: AsyncSession = Depends(get_session)
+    user_id: int = Path(...), session: AsyncSession = Depends(get_session)
 ) -> dict:
     pot = await store.pot_accessor.get_pot_by(
         session=session, where=(PotModel.user_id == user_id)
@@ -34,7 +34,7 @@ async def view_pot(
 
 @view_router.get(path=".me.view", status_code=status.HTTP_200_OK)
 async def view_me(
-        user: UserSchema = Depends(store.integration_user_accessor.get_user),
-        session: AsyncSession = Depends(get_session)
+    user: UserSchema = Depends(store.integration_user_accessor.get_user),
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
     return await view_pot(user_id=user.id, session=session)
