@@ -2,7 +2,7 @@ from aiohttp import ClientSession
 from loguru import logger
 
 
-class Session:
+class SessionAccessor:
     session: ClientSession = None
 
     def __init__(self) -> None:

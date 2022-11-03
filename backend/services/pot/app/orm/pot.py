@@ -1,19 +1,11 @@
-from tortoise import Model
-from tortoise.contrib.pydantic import pydantic_model_creator
-from tortoise.fields.data import BigIntField
+from sqlalchemy import BigInteger, Column, Integer
+
+from db.base import Base
 
 
-class PotModel(Model):
-    id = BigIntField(pk=True)
+class PotModel(Base):
+    id = Column(Integer, primary_key=True)
 
-    user_id = BigIntField(null=False, unique=True)
+    user_id = Column(Integer, unique=True, nullable=False)
 
-    pot = BigIntField(default=15000)
-
-
-pot_schema_out = pydantic_model_creator(PotModel,
-                                        name='PotSchemaOut')
-
-pot_schema_in = pydantic_model_creator(PotModel,
-                                       name='PotSchemaIn',
-                                       exclude=('id', 'user_id',))
+    pot = Column(BigInteger, default=15000)

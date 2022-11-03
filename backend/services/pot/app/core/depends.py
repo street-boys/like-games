@@ -1,6 +1,6 @@
-from core.tools import store
-from store import Store
+from fastapi.requests import Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
-def get_store() -> Store:
-    return store
+def get_session(request: Request) -> AsyncSession:
+    return request.state.session

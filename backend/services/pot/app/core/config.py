@@ -13,7 +13,7 @@ def get_admin_settings() -> AdminSettings:
 
 
 class DatabaseSettings(BaseSettings):
-    POT_DATABASE_URI: str
+    POT_DATABASE_URI: str = "sqlite+aiosqlite:///pot.db"
 
 
 @lru_cache()
