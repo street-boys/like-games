@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "telegram"
+version = "0.1.0"
+description = ""
+authors = ["copper-boy <sermed512@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+loguru = "^0.6.0"
+pydantic = {extras = ["email"], version = "^1.10.2"}
+aiogram = {version = "^3.0.0b5", allow-prereleases = true}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -4,9 +4,7 @@ from orm.user import UserModel
 
 
 class Connection:
-    def __init__(self,
-                 websocket: WebSocket,
-                 user: UserModel) -> None:
+    def __init__(self, websocket: WebSocket, user: UserModel) -> None:
         self.websocket = websocket
         self.user = user
 

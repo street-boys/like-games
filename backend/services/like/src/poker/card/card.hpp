@@ -8,8 +8,6 @@
 #include "rank.hpp"
 #include "suit.hpp"
 
-#include <glaze/glaze.hpp>
-
 #include <compare>
 #include <cstdint>
 #include <stdexcept>

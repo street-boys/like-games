@@ -5,8 +5,6 @@ from api import api_router
 from core.handlers import register_all_exception_handlers
 from core.middlewares import register_middlewares
 from core.tools import store
-from db.base import Base
-from db.session import _engine
 from responses.okay import okay_response
 
 

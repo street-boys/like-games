@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from fastapi_jwt_auth import AuthJWT
 from starlette import status
 
-from db.base import Base
-from db.session import _engine
 from api import api_router
 from core.handlers import register_all_exception_handlers
 from core.middlewares import register_middlewares

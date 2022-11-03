@@ -13,17 +13,14 @@ async def create_user(user_id: int) -> UserModel:
 
 
 async def get_user_by(attr: attribute, value: Any) -> UserModel:
-    __filter = {
-        attr.filter.name: value
-    }
+    __filter = {attr.filter.name: value}
 
     user = await UserModel.get_or_none(**__filter)
 
     return user
 
 
-async def can_get_chat(user: UserModel,
-                       chat: ChatModel) -> bool:
+async def can_get_chat(user: UserModel, chat: ChatModel) -> bool:
     if chat.chat_type == ChatTypeEnum.public:
         return True
 

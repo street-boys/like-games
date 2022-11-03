@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 
 class UserSchema(BaseModel):
     id: int
-    email: EmailStr
+    telegram: int
+    email: EmailStr = None
     username: str
-    join: datetime
-    online: bool
+    join: datetime = None

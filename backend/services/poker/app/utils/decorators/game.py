@@ -1,37 +1,20 @@
-from typing import Callable, Any
+from typing import Any, Callable
 
 from structures.enums import GameStateEnum
+from utils.ws._answer import AnswerWSSchema
 
 
-class game_started_required:
-    def __init__(self, function: Callable) -> None:
-        self.function = function
+class game_in_wait_for_bet_required:
+    def __init__(self,
+                 function: Callable) -> None:
+        self._function = function
 
-    async def __call__(self, *args, **kwargs) -> Any:
+    async def __call__(self, state: int, *args, **kwargs) -> Any:
         game = kwargs.get('game')
 
-        if game.game.state == GameStateEnum.WAIT_FOR_PLAYERS:
-            game.personal_json(connection=kwargs.get('sender'),
-                               json={
-                                   'ok': False,
-                                   'message': 'the game not started'
-                               })
-        else:
-            return await self.function(*args, **kwargs)
-
-
-class game_in_ready_state_required:
-    def __init__(self, function: Callable) -> None:
-        self.function = function
-
-    async def __call__(self, *args, **kwargs) -> Any:
-        game = kwargs.get('game')
-
-        if game.game.state == GameStateEnum.WAIT_FOR_READY:
-            game.personal_json(connection=kwargs.get('sender'),
-                               json={
-                                   'ok': False,
-                                   'message': 'game not in a ready state'
-                               })
-        else:
-            return await self.function(*args, **kwargs)
+        if game.game.state == GameStateEnum.WAIT_FOR_BET.value:
+            return await game.personal_json(connection=kwargs.get('sender'),
+                                            json=AnswerWSSchema(ok=False,
+                                                                type='undefined',
+                                                                detail={'message': 'the game not started'}).dict())
+        return await self._function(*args, **kwargs)

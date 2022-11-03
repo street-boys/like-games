@@ -8,4 +8,3 @@ class UserSchema(BaseModel):
     email: EmailStr
     username: str
     join: datetime
-    online: bool

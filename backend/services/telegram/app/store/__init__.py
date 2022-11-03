@@ -1,4 +1,4 @@
-from accessors.aiohttp_session.session import Session
+from store.aiohttp_session.session import Session
 
 
 class Store:

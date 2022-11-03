@@ -19,7 +19,7 @@ view_router = APIRouter()
 @view_router.get(path=".view.by/{filter}/{value}", status_code=status.HTTP_200_OK)
 async def view_user(
     filter: FilterPathEnum = Path(FilterPathEnum.id),
-    value: Any = Query(...),
+    value: int = Query(...),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     match filter:
