@@ -5,13 +5,13 @@ from structures.enums import RegistrationTypeEnum
 
 class UserSchema(BaseModel):
     id: int
-    telegram: int | None = None
-    email: EmailStr
+    telegram: int | None
+    email: EmailStr | None
     username: str
     registration_type: RegistrationTypeEnum
 
 
 class UserViewSchema(BaseModel):
     id: int
-    telegram: int | None = None
+    telegram: int | None
     username: str
