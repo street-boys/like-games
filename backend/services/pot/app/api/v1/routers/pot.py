@@ -20,7 +20,10 @@ async def me(
     user: UserSchema = Depends(store.integration_user_accessor.get_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    pot = await store.pot_accessor.create_pot(session=session, user_id=user.id)
+    async with session.begin_nested() as nested_session:
+        pot = await store.pot_accessor.create_pot(
+            session=nested_session.session, user_id=user.id
+        )
     pot_out = PotSchema.from_orm(pot)
 
     return okay_response(detail={"pot": pot_out.dict()})
