@@ -29,3 +29,12 @@ class JWTSettings(BaseSettings):
 @lru_cache()
 def get_jwt_settings() -> JWTSettings:
     return JWTSettings()
+
+
+class TelegramSettings(BaseSettings):
+    TELEGRAM_BOT_API_TOKEN: str
+
+
+@lru_cache()
+def get_telegram_settings() -> TelegramSettings:
+    return TelegramSettings()

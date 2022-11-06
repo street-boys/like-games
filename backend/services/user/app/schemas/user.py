@@ -20,11 +20,11 @@ class UserLoginSchema(BaseModel):
 
 
 class UserSchema(BaseModel):
-    id: int | None
+    id: int
     telegram: int | None
     email: EmailStr | None
-    username: str | None
-    registration_type: RegistrationTypeEnum | None
+    username: str
+    registration_type: RegistrationTypeEnum
 
     class Config:
         orm_mode = True

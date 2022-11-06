@@ -6,6 +6,7 @@ from starlette import status
 
 from api.v1.routers.cookie import cookie_router
 from api.v1.routers.oauth2 import oauth2_router
+from api.v1.routers.telegram import telegram_router
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
@@ -16,6 +17,7 @@ from utils.auth import get_password_hash
 v1_router = APIRouter()
 v1_router.include_router(cookie_router)
 v1_router.include_router(oauth2_router)
+v1_router.include_router(telegram_router)
 
 
 @v1_router.post(path=".registration", status_code=status.HTTP_201_CREATED)

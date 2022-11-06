@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi_jwt_auth import AuthJWT
 from starlette import status
+from starlette.responses import HTMLResponse
 
 from api import api_router
 from core.handlers import register_all_exception_handlers
@@ -45,4 +46,20 @@ async def root() -> dict:
         detail={
             "service": {"status": "Okay", "health": "Okay", "production_ready": True}
         }
+    )
+
+
+@app.get(path="/api.user.main")
+async def main() -> HTMLResponse:
+    return HTMLResponse(
+        """<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello, World!</title>
+</head>
+<body>
+    <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="likegames_poker_tbot" data-size="large" data-auth-url="https://2c43-31-129-207-46.eu.ngrok.io/api.user.telegram.login" data-request-access="write"></script>
+</body>
+</html>
+"""
     )
