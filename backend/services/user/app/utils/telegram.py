@@ -18,13 +18,12 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
     auth_date = request_data.get("auth_date")
 
     request_data.pop("hash", None)
-    request_data_alphabetical_order = sorted(request_data.items(), key=lambda x: x[0])
+    request_data_alphabetical_order = dict(sorted(request_data.items(), key=lambda x: x[0]))
 
     data_check_string = []
 
-    for data_pair in request_data_alphabetical_order:
-        key, value = data_pair[0], data_pair[1]
-        data_check_string.append(key + "=" + value)
+    for key, value in request_data_alphabetical_order.items():
+        data_check_string.append(f'{key}={value}')
 
     data_check_string = "\n".join(data_check_string)
 
