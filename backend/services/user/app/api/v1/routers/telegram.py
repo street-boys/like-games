@@ -17,9 +17,9 @@ telegram_router = APIRouter()
 
 @telegram_router.get(path=".telegram.login", status_code=status.HTTP_200_OK)
 async def login(
-        request: Request,
-        authorize: AuthJWT = Depends(),
-        session: AsyncSession = Depends(get_session),
+    request: Request,
+    authorize: AuthJWT = Depends(),
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
     request_data = verify_telegram_authentication(query=request.query_params)
 
@@ -29,7 +29,9 @@ async def login(
     if not user:
         async with session.begin_nested() as nested_session:
             user = await store.user_accessor.create_user_telegram(
-                session=nested_session.session, telegram=request_data.id, username=request_data.username
+                session=nested_session.session,
+                telegram=request_data.id,
+                username=request_data.username,
             )
 
     access_token = authorize.create_access_token(subject=user.id)
