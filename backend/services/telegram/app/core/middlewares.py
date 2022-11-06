@@ -8,10 +8,12 @@ class PrivateChatMiddleware(BaseMiddleware):
     def __init__(self) -> None:
         super().__init__()
 
-    async def __call__(self,
-                       handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
-                       event: Message,
-                       data: dict[str, Any]) -> Any:
+    async def __call__(
+        self,
+        handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
+        event: Message,
+        data: dict[str, Any],
+    ) -> Any:
         match event.chat.type:
-            case 'private':
+            case "private":
                 return await handler(event, data)

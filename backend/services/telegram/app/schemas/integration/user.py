@@ -1,11 +1,7 @@
-from datetime import datetime
-
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
-class UserSchema(BaseModel):
+class UserViewSchema(BaseModel):
     id: int
     telegram: int
-    email: EmailStr = None
     username: str
-    join: datetime = None

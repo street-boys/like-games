@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 
 
 class DatabaseSettings(BaseSettings):
-    TELEGRAM_DATABASE_URL: str = 'sqlite://telegram.db'
+    TELEGRAM_DATABASE_URL: str = "sqlite://telegram.db"
 
 
 @lru_cache()
@@ -13,8 +13,8 @@ def get_database_settings() -> DatabaseSettings:
 
 
 class SiteSettings(BaseSettings):
-    AUTH_SITE_BASE_URL: str = 'http://localhost'
-    POT_SITE_BASE_URL: str = 'http://localhost'
+    AUTH_SITE_BASE_URL: str = "http://localhost"
+    POT_SITE_BASE_URL: str = "http://localhost"
 
 
 @lru_cache()
