@@ -41,12 +41,13 @@ async def registration(
 
     hashed_password = get_password_hash(user_data.password)
 
-    user = await store.user_accessor.create_user(
-        session=session,
-        email=user_data.email,
-        username=user_data.username,
-        password=hashed_password,
-    )
+    async with session.begin_nested() as nested_session:
+        user = await store.user_accessor.create_user(
+            session=nested_session.session,
+            email=user_data.email,
+            username=user_data.username,
+            password=hashed_password,
+        )
 
     user_out = UserSchema.from_orm(user)
 
