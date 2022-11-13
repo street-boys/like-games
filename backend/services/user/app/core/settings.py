@@ -7,8 +7,6 @@ class Settings(BaseModel):
     authjwt_secret_key: str = get_jwt_settings().SECRET_KEY
     authjwt_algorithm: str = get_jwt_settings().ALGORITHM
 
-    authjwt_token_location: set = {"cookies", "headers"}
+    authjwt_token_location: set = {"cookies"}
 
-    authjwt_cookie_secure: bool = False
-
-    authjwt_cookie_csrf_protect: bool = True
+    authjwt_cookie_csrf_protect: bool = True  # production ready

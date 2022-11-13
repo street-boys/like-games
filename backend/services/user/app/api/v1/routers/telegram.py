@@ -9,20 +9,25 @@ from starlette import status
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
-from responses.okay import okay_response
+from schemas.user import UserSchema
 from utils.telegram import verify_telegram_authentication
 
 telegram_router = APIRouter()
 
 
-@telegram_router.get(path=".telegram.login", status_code=status.HTTP_200_OK)
+@telegram_router.post(
+    path=".telegram.login",
+    response_description="The user on successful login",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK,
+)
 async def login(
-    request: Request,
-    authorize: AuthJWT = Depends(),
-    session: AsyncSession = Depends(get_session),
-) -> dict:
-    request_data = verify_telegram_authentication(query=request.query_params)
-
+    request: Request, authorize: AuthJWT = Depends(), session: AsyncSession = Depends(get_session)
+) -> UserSchema:
+    try:
+        request_data = verify_telegram_authentication(query=request.query_params)
+    except TypeError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data")
     user = await store.user_accessor.get_user_by(
         session=session, where=(UserModel.telegram == request_data.id)
     )
@@ -40,4 +45,4 @@ async def login(
     authorize.set_access_cookies(access_token)
     authorize.set_refresh_cookies(refresh_token)
 
-    return okay_response(detail="successfully login")
+    return user

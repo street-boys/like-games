@@ -10,7 +10,6 @@ from api.v1.routers.telegram import telegram_router
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
-from responses.okay import okay_response
 from schemas.user import UserRegistrationSchema, UserSchema
 from utils.auth import get_password_hash
 
@@ -20,17 +19,21 @@ v1_router.include_router(oauth2_router)
 v1_router.include_router(telegram_router)
 
 
-@v1_router.post(path=".registration", status_code=status.HTTP_201_CREATED)
+@v1_router.post(
+    path=".registration",
+    response_description="The user on successful registration",
+    response_model=UserSchema,
+    status_code=status.HTTP_201_CREATED,
+)
 async def registration(
     user_data: UserRegistrationSchema, session: AsyncSession = Depends(get_session)
-) -> dict:
+) -> UserSchema:
     user = await store.user_accessor.get_user_by(
         session=session, where=(UserModel.email == user_data.email)
     )
     if user:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"user with {user.email=} already exits",
+            status_code=status.HTTP_409_CONFLICT, detail=f"user with {user.email=} already exits"
         )
 
     _, __, password_len = map(lambda k: len(k[1]), user_data)
@@ -51,6 +54,4 @@ async def registration(
             password=hashed_password,
         )
 
-    user_out = UserSchema.from_orm(user)
-
-    return okay_response(detail={"user": user_out.dict()})
+    return user

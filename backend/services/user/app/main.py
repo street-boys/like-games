@@ -1,14 +1,17 @@
 from fastapi import FastAPI
 from fastapi_jwt_auth import AuthJWT
+from sqladmin import Admin
 from starlette import status
-from starlette.responses import HTMLResponse
 
 from api import api_router
+from core.config import get_sqladmin_settings
 from core.handlers import register_all_exception_handlers
 from core.middlewares import register_middlewares
 from core.settings import Settings
 from core.tools import store
-from responses.okay import okay_response
+from db.session import _engine
+from utils.admin import UserModelView
+from utils.backend import Backend
 
 
 def create_application() -> FastAPI:
@@ -18,6 +21,20 @@ def create_application() -> FastAPI:
         redoc_url="/api.user/redoc",
     )
     application.include_router(api_router, prefix="/api.user")
+
+    def setup_admin() -> Admin:
+        authentication_backend = Backend(secret_key=get_sqladmin_settings().SQLADMIN_SECRET_KEY)
+        admin = Admin(
+            app=application,
+            engine=_engine,
+            base_url="/api.user/admin",
+            authentication_backend=authentication_backend,
+        )
+        admin.add_view(UserModelView)
+
+        return admin
+
+    application.admin = setup_admin()
 
     @AuthJWT.load_config
     def get_config() -> Settings:
@@ -40,26 +57,15 @@ def create_application() -> FastAPI:
 app = create_application()
 
 
-@app.get(path="/api.user", status_code=status.HTTP_200_OK)
+@app.get(
+    path="/api.user",
+    status_code=status.HTTP_200_OK,
+)
 async def root() -> dict:
-    return okay_response(
-        detail={
-            "service": {"status": "Okay", "health": "Okay", "production_ready": True}
+    return {
+        "service": {
+            "status": "Okay",
+            "health": "Okay",
+            "production_ready": True,
         }
-    )
-
-
-@app.get(path="/api.user.main")
-async def main() -> HTMLResponse:
-    return HTMLResponse(
-        """<!DOCTYPE html>
-<html>
-<head>
-    <title>Hello, World!</title>
-</head>
-<body>
-    <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="likegames_poker_tbot" data-size="large" data-auth-url="https://2c43-31-129-207-46.eu.ngrok.io/api.user.telegram.login" data-request-access="write"></script>
-</body>
-</html>
-"""
-    )
+    }

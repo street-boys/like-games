@@ -1,2 +1,7 @@
-from utils.decorators.admin import admin_required
-from utils.decorators.auth import login_required
+from .admin import admin_required
+from .auth import login_required
+
+__all__ = (
+    "admin_required",
+    "login_required",
+)

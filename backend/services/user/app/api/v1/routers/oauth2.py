@@ -9,7 +9,6 @@ from starlette import status
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
-from responses.okay import okay_response
 from schemas.user import UserSchema
 from utils.auth import authenticate_user
 
@@ -17,26 +16,30 @@ oauth2_router = APIRouter()
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="/api.user.oauth2.login")
 
 
-@oauth2_router.post(path=".oauth2.login", status_code=status.HTTP_200_OK)
+@oauth2_router.post(
+    path=".oauth2.login",
+    response_description="The access token",
+    status_code=status.HTTP_200_OK,
+)
 async def login(
     authorize: AuthJWT = Depends(),
     oauth_form: OAuth2PasswordRequestForm = Depends(),
     session: AsyncSession = Depends(get_session),
-) -> dict:
+) -> UserSchema:
     user = await authenticate_user(
         session=session, email=oauth_form.username, password=oauth_form.password
     )
 
     access_token = authorize.create_access_token(subject=user.id)
 
-    return okay_response(detail={"access_token": access_token, "token_type": "bearer"})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 async def get_user(
     authorize: AuthJWT = Depends(),
     token: str = Depends(oauth2_schema),
     session: AsyncSession = Depends(get_session),
-) -> UserSchema:
+) -> UserModel:
     authorize.jwt_required(token=token)
 
     current_user = authorize.get_jwt_subject()
@@ -44,14 +47,16 @@ async def get_user(
         session=session, where=(UserModel.id == current_user)
     )
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
-    user_out = UserSchema.from_orm(user)
-    return user_out
+    return user
 
 
-@oauth2_router.get(path=".oauth2.current", status_code=status.HTTP_200_OK)
-async def current(current_user: UserSchema = Depends(get_user)) -> dict:
-    return okay_response(detail={"user": current_user.dict()})
+@oauth2_router.get(
+    path=".oauth2.current",
+    response_description="The current user who called this method",
+    response_model=UserSchema,
+    status_code=status.HTTP_200_OK,
+)
+async def current(current_user: UserSchema = Depends(get_user)) -> UserSchema:
+    return current_user

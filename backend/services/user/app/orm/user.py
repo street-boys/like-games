@@ -14,8 +14,5 @@ class UserModel(Base):
     username = Column(String)
     password = Column(String, nullable=True)
 
-    registration_type = Column(
-        Enum(RegistrationTypeEnum),
-        default=RegistrationTypeEnum.provided,
-    )
+    registration_type = Column(Enum(RegistrationTypeEnum), default=RegistrationTypeEnum.provided)
     join = Column(DateTime, default=datetime.utcnow)

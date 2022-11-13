@@ -18,20 +18,25 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
     auth_date = request_data.get("auth_date")
 
     request_data.pop("hash", None)
-    request_data_alphabetical_order = dict(sorted(request_data.items(), key=lambda x: x[0]))
+    request_data_alphabetical_order = dict(
+        sorted(
+            request_data.items(),
+            key=lambda x: x[0],
+        )
+    )
 
     data_check_string = []
 
     for key, value in request_data_alphabetical_order.items():
-        data_check_string.append(f'{key}={value}')
+        data_check_string.append(f"{key}={value}")
 
     data_check_string = "\n".join(data_check_string)
 
-    secret_key = hashlib.sha256(
-        get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()
-    ).digest()
+    secret_key = hashlib.sha256(get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()).digest()
     _hash = hmac.new(
-        secret_key, msg=data_check_string.encode(), digestmod=hashlib.sha256
+        secret_key,
+        msg=data_check_string.encode(),
+        digestmod=hashlib.sha256,
     ).hexdigest()
 
     unix_time_now = int(time.time())

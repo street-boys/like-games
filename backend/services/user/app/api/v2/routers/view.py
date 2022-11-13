@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Depends, Path, Query
@@ -9,19 +7,23 @@ from starlette import status
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
-from responses.okay import okay_response
 from schemas.user import UserViewSchema
 from structures.enums import FilterPathEnum
 
 view_router = APIRouter()
 
 
-@view_router.get(path=".view.by/{filter}/{value}", status_code=status.HTTP_200_OK)
+@view_router.get(
+    path=".view.by/{filter}/{value}",
+    response_description="Returns the user by filter",
+    response_model=UserViewSchema,
+    status_code=status.HTTP_200_OK,
+)
 async def view_user(
     filter: FilterPathEnum = Path(FilterPathEnum.id),
     value: int = Query(...),
     session: AsyncSession = Depends(get_session),
-) -> dict:
+) -> UserViewSchema:
     match filter:
         case filter.id:
             where = UserModel.id == value
@@ -37,6 +39,4 @@ async def view_user(
             detail=f"unable to find user by {filter=}, by {value=}",
         )
 
-    user_out = UserViewSchema.from_orm(user)
-
-    return okay_response(detail={"user": user_out.dict()})
+    return user
