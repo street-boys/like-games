@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  migrations_user_service:
+    image: like-games-migrations_user_service:latest
+    build:
+      context: ./services/user/
+      dockerfile: Dockerfile.migrations
+    volumes:
+      - ./services/user/:/app/
+    env_file:
+      - .docker.env
+      - .env
+      - .migrations.python.env
+    depends_on:
+     - user_db
+    restart: on-failure
+  migrations_pot_service:
+    image: like-games-migrations_pot_service:latest
+    build:
+      context: ./services/pot/
+      dockerfile: Dockerfile.migrations
+    env_file:
+      - .docker.env
+      - .env
+      - .migrations.python.env
+    volumes:
+      - ./services/pot/:/app/
+    depends_on:
+      - pot_db
+    restart: on-failure
