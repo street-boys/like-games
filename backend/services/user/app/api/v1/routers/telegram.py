@@ -22,12 +22,16 @@ telegram_router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def login(
-    request: Request, authorize: AuthJWT = Depends(), session: AsyncSession = Depends(get_session)
+    request: Request,
+    authorize: AuthJWT = Depends(),
+    session: AsyncSession = Depends(get_session),
 ) -> UserSchema:
     try:
         request_data = verify_telegram_authentication(query=request.query_params)
     except TypeError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data"
+        )
     user = await store.user_accessor.get_user_by(
         session=session, where=(UserModel.telegram == request_data.id)
     )

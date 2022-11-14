@@ -23,7 +23,9 @@ def create_application() -> FastAPI:
     application.include_router(api_router, prefix="/api.user")
 
     def setup_admin() -> Admin:
-        authentication_backend = Backend(secret_key=get_sqladmin_settings().SQLADMIN_SECRET_KEY)
+        authentication_backend = Backend(
+            secret_key=get_sqladmin_settings().SQLADMIN_SECRET_KEY
+        )
         admin = Admin(
             app=application,
             engine=_engine,
@@ -42,6 +44,8 @@ def create_application() -> FastAPI:
 
     @application.on_event(event_type="startup")
     async def startup() -> None:
+        async with _engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
         await store.connect()
 
     @application.on_event(event_type="shutdown")

@@ -37,9 +37,15 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def authenticate_user(session: AsyncSession, email: EmailStr, password: str) -> UserModel:
-    user = await store.user_accessor.get_user_by(session=session, where=(UserModel.email == email))
-    if not user or not verify_password(password=password, hashed_password=user.password):
+async def authenticate_user(
+    session: AsyncSession, email: EmailStr, password: str
+) -> UserModel:
+    user = await store.user_accessor.get_user_by(
+        session=session, where=(UserModel.email == email)
+    )
+    if not user or not verify_password(
+        password=password, hashed_password=user.password
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="incorrect login data posted"
         )

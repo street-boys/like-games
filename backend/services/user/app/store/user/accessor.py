@@ -22,15 +22,21 @@ class UserAccessor:
         self, session: AsyncSession, telegram: int, username: str
     ) -> UserModel:
         to_return = UserModel(
-            telegram=telegram, username=username, registration_type=RegistrationTypeEnum.telegram
+            telegram=telegram,
+            username=username,
+            registration_type=RegistrationTypeEnum.telegram,
         )
 
         session.add(to_return)
 
         return to_return
 
-    async def update_user(self, session: AsyncSession, user_id: int, values: dict) -> None:
-        await session.execute(update(UserModel).where(UserModel.id == user_id).values(**values))
+    async def update_user(
+        self, session: AsyncSession, user_id: int, values: dict
+    ) -> None:
+        await session.execute(
+            update(UserModel).where(UserModel.id == user_id).values(**values)
+        )
 
     async def get_user_by(self, session: AsyncSession, where: Any) -> UserModel:
         to_return = await session.execute(select(UserModel).where(where))

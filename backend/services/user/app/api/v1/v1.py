@@ -33,7 +33,8 @@ async def registration(
     )
     if user:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=f"user with {user.email=} already exits"
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"user with {user.email=} already exits",
         )
 
     _, __, password_len = map(lambda k: len(k[1]), user_data)

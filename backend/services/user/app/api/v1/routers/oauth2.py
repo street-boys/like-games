@@ -47,7 +47,9 @@ async def get_user(
         session=session, where=(UserModel.id == current_user)
     )
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
+        )
 
     return user
 

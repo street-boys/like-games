@@ -15,7 +15,9 @@ def __bad_response(status_code: int, detail: dict) -> JSONResponse:
 
 def register_authjwtexception_handler(app: FastAPI) -> None:
     @app.exception_handler(AuthJWTException)
-    async def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> JSONResponse:
+    async def authjwt_exception_handler(
+        request: Request, exc: AuthJWTException
+    ) -> JSONResponse:
         logger.info(
             f"With request=([{request.method}][{request.url}][{request.query_params}]) "
             f"occurred error=([{exc.status_code}][{exc.message}])"
@@ -25,7 +27,9 @@ def register_authjwtexception_handler(app: FastAPI) -> None:
 
 def register_httpexception_handler(app: FastAPI) -> None:
     @app.exception_handler(HTTPException)
-    async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    async def http_exception_handler(
+        request: Request, exc: HTTPException
+    ) -> JSONResponse:
         logger.info(
             f"With request=([{request.method}][{request.url}][{request.query_params}]) "
             f"occurred error=([{exc.status_code}][{exc.detail}])"

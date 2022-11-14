@@ -32,7 +32,9 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
 
     data_check_string = "\n".join(data_check_string)
 
-    secret_key = hashlib.sha256(get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()).digest()
+    secret_key = hashlib.sha256(
+        get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()
+    ).digest()
     _hash = hmac.new(
         secret_key,
         msg=data_check_string.encode(),
