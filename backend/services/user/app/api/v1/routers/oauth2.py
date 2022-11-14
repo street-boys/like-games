@@ -12,11 +12,11 @@ from orm.user import UserModel
 from schemas.user import UserSchema
 from utils.auth import authenticate_user
 
-oauth2_router = APIRouter()
+router = APIRouter()
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="/api.user.oauth2.login")
 
 
-@oauth2_router.post(
+@router.post(
     path=".oauth2.login",
     response_description="The access token",
     status_code=status.HTTP_200_OK,
@@ -47,14 +47,12 @@ async def get_user(
         session=session, where=(UserModel.id == current_user)
     )
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     return user
 
 
-@oauth2_router.get(
+@router.get(
     path=".oauth2.current",
     response_description="The current user who called this method",
     response_model=UserSchema,

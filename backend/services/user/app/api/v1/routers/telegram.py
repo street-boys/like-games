@@ -12,10 +12,10 @@ from orm.user import UserModel
 from schemas.user import UserSchema
 from utils.telegram import verify_telegram_authentication
 
-telegram_router = APIRouter()
+router = APIRouter()
 
 
-@telegram_router.post(
+@router.post(
     path=".telegram.login",
     response_description="The user on successful login",
     response_model=UserSchema,
@@ -29,9 +29,7 @@ async def login(
     try:
         request_data = verify_telegram_authentication(query=request.query_params)
     except TypeError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data")
     user = await store.user_accessor.get_user_by(
         session=session, where=(UserModel.telegram == request_data.id)
     )

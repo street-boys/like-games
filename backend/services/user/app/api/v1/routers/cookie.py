@@ -18,10 +18,10 @@ from utils.token import (
     unset_cookies_token,
 )
 
-cookie_router = APIRouter()
+router = APIRouter()
 
 
-@cookie_router.post(
+@router.post(
     path=".cookie.login",
     response_description="The user on successful login",
     response_model=UserSchema,
@@ -41,7 +41,7 @@ async def login(
     return user
 
 
-@cookie_router.delete(
+@router.delete(
     path=".cookie.logout",
     response_model=UserSchema,
     response_description="A user who has logged out",
@@ -58,16 +58,14 @@ async def logout(
     )
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     unset_cookies_token(authorize=authorize)
 
     return user
 
 
-@cookie_router.post(
+@router.post(
     path=".cookie.refresh",
     response_description="The user",
     response_model=UserSchema,
@@ -84,14 +82,12 @@ async def refresh(
     )
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     return user
 
 
-@cookie_router.get(
+@router.get(
     path=".cookie.current",
     response_description="The current user who called this method",
     response_model=UserSchema,
@@ -108,8 +104,6 @@ async def current(
     )
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
 
     return user

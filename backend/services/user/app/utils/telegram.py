@@ -6,7 +6,7 @@ from starlette.datastructures import QueryParams
 
 from core.config import get_telegram_settings
 from schemas.integration.telegram import TelegramOAuth2ResponseSchema
-from structures.telegram.errors import NotTelegramDataError, TelegramDataIsOutdatedError
+from structures.exceptions import NotTelegramDataError, TelegramDataIsOutdatedError
 
 ONE_DAY_IN_SECONDS = 86400
 
@@ -32,9 +32,7 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
 
     data_check_string = "\n".join(data_check_string)
 
-    secret_key = hashlib.sha256(
-        get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()
-    ).digest()
+    secret_key = hashlib.sha256(get_telegram_settings().TELEGRAM_BOT_API_TOKEN.encode()).digest()
     _hash = hmac.new(
         secret_key,
         msg=data_check_string.encode(),
@@ -55,4 +53,4 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
             "with calculated hash based on bot token."
         )
 
-    return TelegramOAuth2ResponseSchema(**request_data)
+    return TelegramOAuth2ResponseSchema.parse_obj(request_data)

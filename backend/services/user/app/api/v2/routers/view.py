@@ -10,10 +10,10 @@ from orm.user import UserModel
 from schemas.user import UserViewSchema
 from structures.enums import FilterPathEnum
 
-view_router = APIRouter()
+router = APIRouter()
 
 
-@view_router.get(
+@router.get(
     path=".view.by/{filter}/{value}",
     response_description="Returns the user by filter",
     response_model=UserViewSchema,

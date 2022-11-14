@@ -4,7 +4,8 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from sqladmin.authentication import AuthenticationBackend
 
 from core.config import get_admin_settings
-from utils.token import create_token
+
+from .token import create_token
 
 
 class Backend(AuthenticationBackend):
@@ -27,6 +28,22 @@ class Backend(AuthenticationBackend):
         return False
 
     async def logout(self, request: Request) -> bool:
+        authorize = AuthJWT()
+
+        token = request.session.get("token")
+
+        if not token:
+            return False
+
+        try:
+            _config = get_admin_settings()
+            subject = authorize.get_raw_jwt(token)
+
+            if subject != _config.ADMIN_WORD:
+                return False
+        except AuthJWTException:
+            return False
+
         request.session.clear()
 
         return True

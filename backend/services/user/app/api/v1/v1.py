@@ -4,22 +4,23 @@ from fastapi.param_functions import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from api.v1.routers.cookie import cookie_router
-from api.v1.routers.oauth2 import oauth2_router
-from api.v1.routers.telegram import telegram_router
 from core.depends import get_session
 from core.tools import store
 from orm.user import UserModel
 from schemas.user import UserRegistrationSchema, UserSchema
 from utils.auth import get_password_hash
 
-v1_router = APIRouter()
-v1_router.include_router(cookie_router)
-v1_router.include_router(oauth2_router)
-v1_router.include_router(telegram_router)
+from .routers.cookie import router as cookie_router
+from .routers.oauth2 import router as oauth2_router
+from .routers.telegram import router as telegram_router
+
+router = APIRouter()
+router.include_router(cookie_router)
+router.include_router(oauth2_router)
+router.include_router(telegram_router)
 
 
-@v1_router.post(
+@router.post(
     path=".registration",
     response_description="The user on successful registration",
     response_model=UserSchema,
