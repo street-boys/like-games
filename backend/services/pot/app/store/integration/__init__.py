@@ -1,1 +1,3 @@
-from store.integration.user.accessor import UserAccessor as IntegrationUserAccessor
+from .user.accessor import UserAccessor as IntegrationUserAccessor
+
+__all__ = ("IntegrationUserAccessor",)

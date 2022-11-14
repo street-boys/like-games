@@ -7,19 +7,24 @@ from starlette import status
 from core.depends import get_session
 from core.tools import store
 from orm.pot import PotModel
-from responses.okay import okay_response
 from schemas.integration.user import UserSchema
 from schemas.pot import PotSchema
 
-view_router = APIRouter()
+router = APIRouter()
 
 
-@view_router.get(path=".view/{user_id}", status_code=status.HTTP_200_OK)
+@router.get(
+    path=".view/{user_id}",
+    response_description="User balance",
+    response_model=PotSchema,
+    status_code=status.HTTP_200_OK,
+)
 async def view_pot(
     user_id: int = Path(...), session: AsyncSession = Depends(get_session)
-) -> dict:
+) -> PotSchema:
     pot = await store.pot_accessor.get_pot_by(
-        session=session, where=(PotModel.user_id == user_id)
+        session=session,
+        where=(PotModel.user_id == user_id),
     )
 
     if not pot:
@@ -27,14 +32,18 @@ async def view_pot(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"pot for user {user_id=} not found on server",
         )
-    pot_out = PotSchema.from_orm(pot)
 
-    return okay_response(detail={"pot": pot_out.dict()})
+    return pot
 
 
-@view_router.get(path=".me.view", status_code=status.HTTP_200_OK)
+@router.get(
+    path=".me.view",
+    response_description="User balance",
+    response_model=PotSchema,
+    status_code=status.HTTP_200_OK,
+)
 async def view_me(
     user: UserSchema = Depends(store.integration_user_accessor.get_user),
     session: AsyncSession = Depends(get_session),
-) -> dict:
+) -> PotSchema:
     return await view_pot(user_id=user.id, session=session)

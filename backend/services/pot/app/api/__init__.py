@@ -1,1 +1,3 @@
-from api.api import api_router
+from .api import router
+
+__all__ = ("router",)

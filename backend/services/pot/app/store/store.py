@@ -1,6 +1,6 @@
-from store.aiohttp_session.accessor import SessionAccessor
-from store.integration import IntegrationUserAccessor
-from store.pot.accessor import PotAccessor
+from .aiohttp_session.accessor import SessionAccessor
+from .integration import IntegrationUserAccessor
+from .pot.accessor import PotAccessor
 
 
 class Store:

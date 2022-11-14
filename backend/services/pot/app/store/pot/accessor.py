@@ -14,10 +14,13 @@ class PotAccessor:
 
         return to_return
 
-    async def update_pot(self, session: AsyncSession, pot_id, pot: int) -> None:
-        await session.execute(
-            update(PotModel).where(PotModel.id == pot_id).values(pot=pot)
-        )
+    async def update_pot(
+        self,
+        session: AsyncSession,
+        pot_id: int,
+        pot: int,
+    ) -> None:
+        await session.execute(update(PotModel).where(PotModel.id == pot_id).values(pot=pot))
 
     async def get_pot_by(self, session: AsyncSession, where: Any) -> PotModel:
         to_return = await session.execute(select(PotModel).where(where))

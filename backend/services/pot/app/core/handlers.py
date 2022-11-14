@@ -5,7 +5,12 @@ from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from responses.bad import bad_response
+
+def __bad_response(status_code: int, detail: dict) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={"detail": detail},
+    )
 
 
 def register_clientresponseerror_handler(app: FastAPI) -> None:
@@ -18,20 +23,24 @@ def register_clientresponseerror_handler(app: FastAPI) -> None:
             f"occurred error=([{exc.status}][{exc.message}])"
         )
 
-        return bad_response(status_code=exc.status, detail=exc.message)
+        return __bad_response(
+            status_code=exc.status,
+            detail=exc.message,
+        )
 
 
 def register_httpexception_handler(app: FastAPI) -> None:
     @app.exception_handler(HTTPException)
-    async def httpexception_handler(
-        request: Request, exc: HTTPException
-    ) -> JSONResponse:
+    async def httpexception_handler(request: Request, exc: HTTPException) -> JSONResponse:
         logger.info(
             f"With request=([{request.method}][{request.url}][{request.query_params}]) "
             f"occurred error=([{exc.status_code}][{exc.detail}])"
         )
 
-        return bad_response(status_code=exc.status_code, detail={"report": exc.detail})
+        return __bad_response(
+            status_code=exc.status_code,
+            detail={"report": exc.detail},
+        )
 
 
 def register_all_exception_handlers(app: FastAPI) -> None:

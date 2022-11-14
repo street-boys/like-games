@@ -14,13 +14,14 @@ class UserAccessor:
         ) as response:
             json = await response.json()
 
-        return UserSchema(**json["detail"]["user"])
+        return UserSchema.parse_obj(json)
 
     async def get_user_by_id(self, user_id: int) -> UserViewSchema:
         base_url = core.config.get_site_settings().AUTH_SITE_BASE_URL
         async with core.tools.store.aiohttp_accessor.session.get(
-            url=f"{base_url}/api.user.view/id/{user_id}", raise_for_status=True
+            url=f"{base_url}/api.user.view/id/{user_id}",
+            raise_for_status=True,
         ) as response:
             json = await response.json()
 
-        return UserViewSchema(**json["detail"]["user"])
+        return UserViewSchema.parse_obj(json)
