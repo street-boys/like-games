@@ -4,11 +4,9 @@ from fastapi.param_functions import Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.pot import PotModel
-from schemas.integration.user import UserSchema
-from schemas.pot import PotSchema
+from core import depends, tools
+from orm import PotModel
+from schemas import integration, pot
 
 router = APIRouter()
 
@@ -16,13 +14,13 @@ router = APIRouter()
 @router.get(
     path=".view/{user_id}",
     response_description="User balance",
-    response_model=PotSchema,
+    response_model=pot.PotSchema,
     status_code=status.HTTP_200_OK,
 )
 async def view_pot(
-    user_id: int = Path(...), session: AsyncSession = Depends(get_session)
-) -> PotSchema:
-    pot = await store.pot_accessor.get_pot_by(
+    user_id: int = Path(...), session: AsyncSession = Depends(tools.get_session)
+) -> pot.PotSchema:
+    pot = await tools.store.pot_accessor.get_pot_by(
         session=session,
         where=(PotModel.user_id == user_id),
     )
@@ -39,11 +37,13 @@ async def view_pot(
 @router.get(
     path=".me.view",
     response_description="User balance",
-    response_model=PotSchema,
+    response_model=pot.PotSchema,
     status_code=status.HTTP_200_OK,
 )
 async def view_me(
-    user: UserSchema = Depends(store.integration_user_accessor.get_user),
-    session: AsyncSession = Depends(get_session),
-) -> PotSchema:
+    user: integration.IntegrationUserSchema = Depends(
+        tools.store.integration_user_accessor.get_user
+    ),
+    session: AsyncSession = Depends(tools.get_session),
+) -> pot.PotSchema:
     return await view_pot(user_id=user.id, session=session)

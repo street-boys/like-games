@@ -5,9 +5,6 @@ from loguru import logger
 class SessionAccessor:
     session: ClientSession = None
 
-    def __init__(self) -> None:
-        ...
-
     async def connect(self) -> None:
         self.session = ClientSession()
 

@@ -3,12 +3,17 @@ from typing import Any
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from orm.pot import PotModel
+from orm import PotModel, UserModel
+from store.base import BaseAccessor
 
 
-class PotAccessor:
-    async def create_pot(self, session: AsyncSession, user_id: int) -> PotModel:
-        to_return = PotModel(user_id=user_id)
+class PotAccessor(BaseAccessor):
+    async def create_pot(self, session: AsyncSession, user: UserModel) -> PotModel:
+        exists = await self.get_pot_by(session=session, where=(PotModel.user_id == user.id))
+        if exists:
+            return exists
+
+        to_return = PotModel(user=user)
 
         session.add(to_return)
 

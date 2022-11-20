@@ -4,11 +4,9 @@ from fastapi.param_functions import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.pot import PotModel
-from schemas.integration.user import UserSchema
-from schemas.pot import PotSchema, PotUpdateSchema
+from core import depends, tools
+from orm import PotModel
+from schemas import integration, pot
 from utils.decorators import admin_required
 
 router = APIRouter()
@@ -17,17 +15,23 @@ router = APIRouter()
 @router.post(
     path=".me",
     response_description="User balance",
-    response_model=PotSchema,
+    response_model=pot.PotSchema,
     status_code=status.HTTP_201_CREATED,
 )
 async def me(
-    user: UserSchema = Depends(store.integration_user_accessor.get_user),
-    session: AsyncSession = Depends(get_session),
-) -> PotSchema:
+    user: integration.IntegrationUserSchema = Depends(
+        tools.store.integration_user_accessor.get_user
+    ),
+    session: AsyncSession = Depends(depends.get_session),
+) -> pot.PotSchema:
     async with session.begin_nested() as nested_session:
-        pot = await store.pot_accessor.create_pot(
+        user = await tools.store.user_accessor.create_user(
             session=nested_session.session,
             user_id=user.id,
+        )
+        pot = await tools.store.pot_accessor.create_pot(
+            session=nested_session.session,
+            user=user,
         )
 
     return pot
@@ -36,17 +40,19 @@ async def me(
 @router.put(
     path=".update/{user_id}",
     response_description="User balance",
-    response_model=PotSchema,
+    response_model=pot.PotSchema,
     status_code=status.HTTP_200_OK,
 )
 @admin_required(target="api_token")
 async def update(
-    data: PotUpdateSchema,
+    data: pot.PotUpdateSchema,
     api_token: str = Query(...),
-    user: UserSchema = Depends(store.integration_user_accessor.get_user_by_id),
-    session: AsyncSession = Depends(get_session),
-) -> PotSchema:
-    pot = await store.pot_accessor.get_pot_by(
+    user: integration.IntegrationUserViewSchema = Depends(
+        tools.store.integration_user_accessor.get_user_by_id
+    ),
+    session: AsyncSession = Depends(depends.get_session),
+) -> pot.PotSchema:
+    pot = await tools.store.pot_accessor.get_pot_by(
         session=session,
         where=(PotModel.user_id == user.id),
     )
@@ -56,7 +62,7 @@ async def update(
             detail=f"pot for user {user.id=} not found on server",
         )
     async with session.begin_nested() as nested_session:
-        await store.pot_accessor.update_pot(
+        await tools.store.pot_accessor.update_pot(
             session=nested_session.session,
             pot_id=pot.id,
             pot=data.pot,
