@@ -13,7 +13,7 @@ def get_admin_settings() -> AdminSettings:
 
 
 class DatabaseSettings(BaseSettings):
-    POKER_DATABASE_URI: str
+    POKER_DATABASE_URI: str = "sqlite+aiosqlite:///poker.db"
 
 
 @lru_cache()

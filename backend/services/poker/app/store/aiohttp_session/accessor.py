@@ -1,12 +1,11 @@
 from aiohttp import ClientSession
 from loguru import logger
 
+from store.base import BaseAccessor
 
-class SessionAccessor:
+
+class SessionAccessor(BaseAccessor):
     session: ClientSession = None
-
-    def __init__(self) -> None:
-        ...
 
     async def connect(self) -> None:
         self.session = ClientSession()
