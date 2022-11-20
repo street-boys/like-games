@@ -5,13 +5,13 @@ import time
 from starlette.datastructures import QueryParams
 
 from core.config import get_telegram_settings
-from schemas.integration.telegram import TelegramOAuth2ResponseSchema
+from schemas.integration import IntegrationTelegramOAuth2ResponseSchema
 from structures.exceptions import NotTelegramDataError, TelegramDataIsOutdatedError
 
 ONE_DAY_IN_SECONDS = 86400
 
 
-def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2ResponseSchema:
+def verify_telegram_authentication(query: QueryParams) -> IntegrationTelegramOAuth2ResponseSchema:
     request_data = dict(query)
 
     received_hash = request_data.get("hash")
@@ -53,4 +53,4 @@ def verify_telegram_authentication(query: QueryParams) -> TelegramOAuth2Response
             "with calculated hash based on bot token."
         )
 
-    return TelegramOAuth2ResponseSchema.parse_obj(request_data)
+    return IntegrationTelegramOAuth2ResponseSchema.parse_obj(request_data)

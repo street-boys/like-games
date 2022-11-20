@@ -4,8 +4,7 @@ from fastapi.param_functions import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
+from core import depends, tools
 from orm.user import UserModel
 from schemas.user import UserRegistrationSchema, UserSchema
 from utils.auth import get_password_hash
@@ -27,9 +26,9 @@ router.include_router(telegram_router)
     status_code=status.HTTP_201_CREATED,
 )
 async def registration(
-    user_data: UserRegistrationSchema, session: AsyncSession = Depends(get_session)
+    user_data: UserRegistrationSchema, session: AsyncSession = Depends(depends.get_session)
 ) -> UserSchema:
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.email == user_data.email)
     )
     if user:
@@ -49,7 +48,7 @@ async def registration(
     hashed_password = get_password_hash(user_data.password)
 
     async with session.begin_nested() as nested_session:
-        user = await store.user_accessor.create_user(
+        user = await tools.store.user_accessor.create_user(
             session=nested_session.session,
             email=user_data.email,
             username=user_data.username,

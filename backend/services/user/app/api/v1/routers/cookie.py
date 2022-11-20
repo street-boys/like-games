@@ -5,18 +5,10 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.user import UserModel
+from core import depends, tools
+from orm import UserModel
 from schemas.user import UserLoginSchema, UserSchema
-from utils.auth import authenticate_user
-from utils.decorators import login_required
-from utils.token import (
-    create_token_and_set_to_cookies,
-    get_jwt_subject,
-    refresh_and_set_access_token,
-    unset_cookies_token,
-)
+from utils import auth, decorators, token
 
 router = APIRouter()
 
@@ -30,13 +22,17 @@ router = APIRouter()
 async def login(
     user_data: UserLoginSchema,
     authorize: AuthJWT = Depends(),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(depends.get_session),
 ) -> UserSchema:
-    user = await authenticate_user(
+    user = await auth.authenticate_user(
         session=session, email=user_data.email, password=user_data.password
     )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="incorrect login data posted"
+        )
 
-    create_token_and_set_to_cookies(authorize=authorize, subject=user.id)
+    token.create_token_and_set_to_cookies(authorize=authorize, subject=user.id)
 
     return user
 
@@ -47,20 +43,18 @@ async def login(
     response_description="A user who has logged out",
     status_code=status.HTTP_200_OK,
 )
-@login_required(target="authorize", attribute="jwt_required")
+@decorators.login_required(target="authorize", attribute="jwt_required")
 async def logout(
-    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(get_session)
+    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(depends.get_session)
 ) -> UserSchema:
-    current_user = unset_cookies_token(authorize=authorize)
+    current_user = token.unset_cookies_token(authorize=authorize)
 
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.id == current_user)
     )
 
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
-
-    unset_cookies_token(authorize=authorize)
 
     return user
 
@@ -71,13 +65,13 @@ async def logout(
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
 )
-@login_required(target="authorize", attribute="jwt_refresh_token_required")
+@decorators.login_required(target="authorize", attribute="jwt_refresh_token_required")
 async def refresh(
-    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(get_session)
+    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(depends.get_session)
 ) -> UserSchema:
-    current_user = refresh_and_set_access_token(authorize=authorize)
+    current_user = token.refresh_and_set_access_token(authorize=authorize)
 
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.id == current_user)
     )
 
@@ -93,13 +87,13 @@ async def refresh(
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
 )
-@login_required(target="authorize", attribute="jwt_required")
+@decorators.login_required(target="authorize", attribute="jwt_required")
 async def current(
-    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(get_session)
+    authorize: AuthJWT = Depends(), session: AsyncSession = Depends(depends.get_session)
 ) -> UserSchema:
-    current_user = get_jwt_subject(authorize=authorize)
+    current_user = token.get_jwt_subject(authorize=authorize)
 
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.id == current_user)
     )
 

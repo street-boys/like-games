@@ -4,11 +4,12 @@ from pydantic import EmailStr
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from orm.user import UserModel
+from orm import UserModel
+from store.base import BaseAccessor
 from structures.enums import RegistrationTypeEnum
 
 
-class UserAccessor:
+class UserAccessor(BaseAccessor):
     async def create_user(
         self, session: AsyncSession, email: EmailStr, username: str, password: str
     ) -> UserModel:

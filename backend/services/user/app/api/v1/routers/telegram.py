@@ -6,9 +6,8 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.user import UserModel
+from core import depends, tools
+from orm import UserModel
 from schemas.user import UserSchema
 from utils.telegram import verify_telegram_authentication
 
@@ -24,18 +23,18 @@ router = APIRouter()
 async def login(
     request: Request,
     authorize: AuthJWT = Depends(),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(depends.get_session),
 ) -> UserSchema:
     try:
         request_data = verify_telegram_authentication(query=request.query_params)
     except TypeError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="can't verify data")
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.telegram == request_data.id)
     )
     if not user:
         async with session.begin_nested() as nested_session:
-            user = await store.user_accessor.create_user_telegram(
+            user = await tools.store.user_accessor.create_user_telegram(
                 session=nested_session.session,
                 telegram=request_data.id,
                 username=request_data.username,

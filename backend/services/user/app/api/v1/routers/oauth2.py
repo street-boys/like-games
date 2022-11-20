@@ -6,9 +6,8 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.user import UserModel
+from core import depends, tools
+from orm import UserModel
 from schemas.user import UserSchema
 from utils.auth import authenticate_user
 
@@ -24,11 +23,15 @@ oauth2_schema = OAuth2PasswordBearer(tokenUrl="/api.user.oauth2.login")
 async def login(
     authorize: AuthJWT = Depends(),
     oauth_form: OAuth2PasswordRequestForm = Depends(),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(depends.get_session),
 ) -> UserSchema:
     user = await authenticate_user(
         session=session, email=oauth_form.username, password=oauth_form.password
     )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="incorrect login data posted"
+        )
 
     access_token = authorize.create_access_token(subject=user.id)
 
@@ -38,12 +41,12 @@ async def login(
 async def get_user(
     authorize: AuthJWT = Depends(),
     token: str = Depends(oauth2_schema),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(depends.get_session),
 ) -> UserModel:
     authorize.jwt_required(token=token)
 
     current_user = authorize.get_jwt_subject()
-    user = await store.user_accessor.get_user_by(
+    user = await tools.store.user_accessor.get_user_by(
         session=session, where=(UserModel.id == current_user)
     )
     if not user:

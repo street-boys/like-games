@@ -4,9 +4,8 @@ from fastapi.param_functions import Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from core.depends import get_session
-from core.tools import store
-from orm.user import UserModel
+from core import depends, tools
+from orm import UserModel
 from schemas.user import UserViewSchema
 from structures.enums import FilterPathEnum
 
@@ -22,7 +21,7 @@ router = APIRouter()
 async def view_user(
     filter: FilterPathEnum = Path(FilterPathEnum.id),
     value: int = Query(...),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(depends.get_session),
 ) -> UserViewSchema:
     match filter:
         case filter.id:
@@ -32,7 +31,7 @@ async def view_user(
         case _:
             where = None
 
-    user = await store.user_accessor.get_user_by(session=session, where=where)
+    user = await tools.store.user_accessor.get_user_by(session=session, where=where)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
